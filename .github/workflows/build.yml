@@ -22,14 +22,15 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Find and move project to root
+      - name: Unzip and extract project
         run: |
-          GRADLE_PATH=$(find . -name "gradlew" | head -1)
-          PROJECT_DIR=$(dirname "$GRADLE_PATH")
-          echo "Found project at: $PROJECT_DIR"
-          if [ "$PROJECT_DIR" != "." ]; then
-            cp -r "$PROJECT_DIR"/. ./
-          fi
+          find . -name "*.zip" | head -1 | xargs unzip -o
+          GRADLEW=$(find . -name "gradlew" | head -1)
+          echo "Found gradlew at: $GRADLEW"
+          PROJECT_DIR=$(dirname "$GRADLEW")
+          echo "Project dir: $PROJECT_DIR"
+          cp -r "$PROJECT_DIR"/. /tmp/project/
+          cp -r /tmp/project/. ./
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
