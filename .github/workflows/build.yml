@@ -22,21 +22,18 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Unzip project
+      - name: Build APK
         run: |
           find . -name "*.zip" | head -1 | xargs unzip -o
           GRADLEW=$(find . -name "gradlew" | head -1)
           PROJECT_DIR=$(dirname "$GRADLEW")
-          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+          echo "Found project at: $PROJECT_DIR"
+          chmod +x "$PROJECT_DIR/gradlew"
+          cd "$PROJECT_DIR"
+          ./gradlew assembleDebug
 
-      - name: Make gradlew executable
-        run: chmod +x $PROJECT_DIR/gradlew
-
-      - name: Build Debug APK
-        run: cd $PROJECT_DIR && ./gradlew assembleDebug
-
-      - name: Upload APK
+      - name: Find and upload APK
         uses: actions/upload-artifact@v4
         with:
           name: JarvisAssistant-APK
-          path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/app-debug.apk
+          path: "**/app-debug.apk"
