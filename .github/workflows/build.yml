@@ -22,6 +22,15 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Find and move project to root
+        run: |
+          GRADLE_PATH=$(find . -name "gradlew" | head -1)
+          PROJECT_DIR=$(dirname "$GRADLE_PATH")
+          echo "Found project at: $PROJECT_DIR"
+          if [ "$PROJECT_DIR" != "." ]; then
+            cp -r "$PROJECT_DIR"/. ./
+          fi
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
